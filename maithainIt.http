@@ -1,0 +1,185 @@
+package com.example.maintainit.controller;
+
+import com.example.maintainit.entity.*;
+import com.example.maintainit.service.MaintainItService;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class MaintainItController {
+
+    private final MaintainItService s;
+
+    public MaintainItController(MaintainItService s) {
+        this.s = s;
+    }
+
+    // =========================
+    // MACHINES
+    // =========================
+
+    @PostMapping("/machines")
+    public ResponseEntity<Machine> createMachine(@RequestBody Machine x) {
+        x = s.createMachine(x);
+        return ResponseEntity
+                .created(URI.create("/api/machines/" + x.getId()))
+                .body(x);
+    }
+
+    @GetMapping("/machines")
+    public List<Machine> machines() {
+        return s.machines();
+    }
+
+    @GetMapping("/machines/{id}")
+    public Machine machine(@PathVariable Long id) {
+        return s.machine(id);
+    }
+
+    @PutMapping("/machines/{id}")
+    public Machine updateMachine(
+            @PathVariable Long id,
+            @RequestBody Machine x
+    ) {
+        return s.updateMachine(id, x);
+    }
+
+    @DeleteMapping("/machines/{id}")
+    public ResponseEntity<Void> deleteMachine(@PathVariable Long id) {
+        s.deleteMachine(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================
+    // TECHNICIANS
+    // =========================
+
+    @PostMapping("/technicians")
+    public ResponseEntity<Technician> createTechnician(
+            @RequestBody Technician x
+    ) {
+        x = s.createTechnician(x);
+        return ResponseEntity
+                .created(URI.create("/api/technicians/" + x.getId()))
+                .body(x);
+    }
+
+    @GetMapping("/technicians")
+    public List<Technician> technicians() {
+        return s.technicians();
+    }
+
+    @GetMapping("/technicians/{id}")
+    public Technician technician(@PathVariable Long id) {
+        return s.technician(id);
+    }
+
+    @PutMapping("/technicians/{id}")
+    public Technician updateTechnician(
+            @PathVariable Long id,
+            @RequestBody Technician x
+    ) {
+        return s.updateTechnician(id, x);
+    }
+
+    @DeleteMapping("/technicians/{id}")
+    public ResponseEntity<Void> deleteTechnician(@PathVariable Long id) {
+        s.deleteTechnician(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================
+    // MAINTENANCE TASKS
+    // =========================
+
+    @PostMapping("/maintenance-tasks/machine/{machineId}")
+    public ResponseEntity<MaintenanceTask> createTask(
+            @PathVariable Long machineId,
+            @RequestParam Long technicianId,
+            @RequestBody MaintenanceTask x
+    ) {
+        x = s.createTask(machineId, technicianId, x);
+
+        return ResponseEntity
+                .created(URI.create("/api/maintenance-tasks/" + x.getId()))
+                .body(x);
+    }
+
+    @GetMapping("/maintenance-tasks")
+    public List<MaintenanceTask> tasks() {
+        return s.tasks();
+    }
+
+    @GetMapping("/maintenance-tasks/{id}")
+    public MaintenanceTask task(@PathVariable Long id) {
+        return s.task(id);
+    }
+
+    @PutMapping("/maintenance-tasks/{id}")
+    public MaintenanceTask updateTask(
+            @PathVariable Long id,
+            @RequestParam Long technicianId,
+            @RequestBody MaintenanceTask x
+    ) {
+        return s.updateTask(id, technicianId, x);
+    }
+
+    @PutMapping("/maintenance-tasks/{id}/complete")
+    public MaintenanceTask complete(
+            @PathVariable Long id,
+            @RequestParam Long technicianId
+    ) {
+        return s.completeTask(id, technicianId);
+    }
+
+    @DeleteMapping("/maintenance-tasks/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        s.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================
+    // USAGE LOGS
+    // =========================
+
+    @PostMapping("/usage-logs/machine/{machineId}")
+    public ResponseEntity<UsageLog> createLog(
+            @PathVariable Long machineId,
+            @RequestBody UsageLog x
+    ) {
+        x = s.createLog(machineId, x);
+
+        return ResponseEntity
+                .created(URI.create("/api/usage-logs/" + x.getId()))
+                .body(x);
+    }
+
+    @GetMapping("/usage-logs")
+    public List<UsageLog> logs() {
+        return s.logs();
+    }
+
+    @GetMapping("/usage-logs/{id}")
+    public UsageLog log(@PathVariable Long id) {
+        return s.log(id);
+    }
+
+    @PutMapping("/usage-logs/{id}")
+    public UsageLog updateLog(
+            @PathVariable Long id,
+            @RequestParam Long machineId,
+            @RequestBody UsageLog x
+    ) {
+        return s.updateLog(id, machineId, x);
+    }
+
+    @DeleteMapping("/usage-logs/{id}")
+    public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
+        s.deleteLog(id);
+        return ResponseEntity.noContent().build();
+    }
+}
